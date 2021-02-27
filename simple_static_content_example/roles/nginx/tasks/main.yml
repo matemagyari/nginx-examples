@@ -1,5 +1,5 @@
 ---
-# tasks file for start_nginx
+# tasks file for nginx
 - name: "apt-get update"
   apt:
     update_cache: yes

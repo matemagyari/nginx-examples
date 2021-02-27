@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  become: True
+
+  tasks:
+    - name: Install nginx
+      package:
+        name: nginx
+        state: present
