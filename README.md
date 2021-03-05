@@ -7,4 +7,4 @@ Local requirements: Docker, Ansible, Molecule
 
 ## Features
 
-- [Simple static content example](simple_static_content_example)
+- [Simple static content example](examples/simple_static_content_example)

@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  roles:
+    - role: ../../../../roles/nginx
+      vars:
+        nginx_config_file: ../../../simple_static_content_example/files/site.conf
