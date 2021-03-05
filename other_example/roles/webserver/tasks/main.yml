@@ -1,0 +1,28 @@
+---
+
+- name: "apt-get update"
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install nodejs and npm
+  apt:
+    name: ['nodejs', 'npm', 'curl']
+    state: latest
+
+- name: Install forever (to run Node.js app)
+  npm: name=forever global=yes state=present
+
+- name: Check list of Node.js apps running
+  command: forever list
+  register: forever_list
+  changed_when: false
+
+- name: Copy file NodeJs app file
+  copy:
+    src: app.js
+    dest: /app.js
+
+- name: Start example Node.js app
+  command: "forever start /app.js"
+  when: "forever_list.stdout.find('/app.js') == -1"

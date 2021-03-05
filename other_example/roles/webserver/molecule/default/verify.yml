@@ -1,0 +1,17 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Hit Nodejs server
+      uri:
+        url: http://localhost:3000
+        return_content: yes
+      register: response
+
+    - name: Verify that the response is the expected one
+      assert:
+        that:
+          - "'Hello World - Nodejs here!' in response.content"

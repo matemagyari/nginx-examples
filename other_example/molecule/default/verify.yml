@@ -1,0 +1,26 @@
+- name: Verify
+  hosts: all
+
+  tasks:
+    - name: Read nginx index page
+      uri:
+        url: http://localhost:80
+        return_content: yes
+      register: nginx_index_content
+
+    - name: Verify that Nginx returns the index page
+      assert:
+        that:
+          - "'Hello World!' in nginx_index_content.content"
+          -
+    - name: Hit Nodejs server
+      uri:
+        url: http://localhost:3000
+        return_content: yes
+      register: response
+
+    - name: Verify that the response is the expected one
+      assert:
+        that:
+          - "'Hello World - Nodejs here!' in response.content"
+

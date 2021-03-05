@@ -4,7 +4,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: simple-nginx-instance
+  - name: nginx-instance
     image: ubuntu:latest
 provisioner:
   name: ansible

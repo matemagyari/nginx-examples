@@ -1,0 +1,18 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Read nginx index page
+      uri:
+        url: http://localhost:80
+        return_content: yes
+      register: nginx_index_content
+
+    - name: Verify that Nginx returns the index page
+      assert:
+        that:
+          - "'Hello World!' in nginx_index_content.content"
