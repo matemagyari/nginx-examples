@@ -3,4 +3,4 @@
   hosts: all
   roles:
     - role: ../../roles/webserver
-    - role: ../../roles/nginx
+    - role: ../../../roles/nginx

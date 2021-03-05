@@ -1,5 +1,10 @@
 ---
 # tasks file for nginx
+
+- name: File Debug
+  debug:
+    msg: "Template [{{ nginx_config_file }}]"
+
 - name: "apt-get update"
   apt:
     update_cache: yes
@@ -28,8 +33,8 @@
     state: absent
 
 - name: copy nginx site.conf
-  template:
-    src: ../templates/site.conf.j2
+  copy:
+    src: "{{ nginx_config_file }}"
     dest: /etc/nginx/sites-enabled/{{ domain }}
     owner: root
     group: root
