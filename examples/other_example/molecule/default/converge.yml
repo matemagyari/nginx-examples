@@ -2,5 +2,7 @@
 - name: Converge
   hosts: all
   roles:
-    - role: ../../roles/webserver
-    - role: ../../../roles/nginx
+    - role: ../../../../roles/webserver
+    - role: ../../../../roles/nginx
+      vars:
+        nginx_config_file: ../../../other_example/files/site.conf

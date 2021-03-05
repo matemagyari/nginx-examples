@@ -1,10 +1,5 @@
 ---
 # tasks file for nginx
-
-- name: File Debug
-  debug:
-    msg: "Template [{{ nginx_config_file }}]"
-
 - name: "apt-get update"
   apt:
     update_cache: yes
