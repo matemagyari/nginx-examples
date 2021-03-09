@@ -14,4 +14,4 @@
     - name: Verify that the response is the expected one
       assert:
         that:
-          - "'Hello World - Nodejs here!' in response.content"
+          - "'NodeJs Hello' in response.content"

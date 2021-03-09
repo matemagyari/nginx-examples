@@ -15,4 +15,4 @@
     - name: Verify that Nginx returns the index page
       assert:
         that:
-          - "'Hello World!' in nginx_index_content.content"
+          - "'Hello NGINX World!' in nginx_index_content.content"

@@ -11,6 +11,7 @@ provisioner:
 scenario:
   ephemeral_directory: /tmp/molecule/curl/.molecule
 verifier:
-  name: ansible # if the tests are represented by the verify.yml
+  name: testinfra
   options:
     v: 1
+    s: true # for logging

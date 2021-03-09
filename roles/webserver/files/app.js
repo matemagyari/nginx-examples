@@ -2,7 +2,7 @@ const http = require('http');
 
 let app = http.createServer((req, res) => {
     res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.end('Hello World - Nodejs here!');
+    res.end('NodeJs Hello');
 });
 
 // Start the server on port 3000
