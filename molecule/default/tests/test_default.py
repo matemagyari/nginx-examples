@@ -25,4 +25,24 @@ def test_simple_proxy(host):
 
     assert_http_response_contains(host, "http://localhost:80", 'NodeJs Hello')
 
+def test_simple_proxy2(host):
+    static_content = "<html>Hey2</html>"
+
+    config = """
+        server {
+          listen 80;
+          listen [::]:80;
+          server_name default-domain;
+          root /var/www/default-domain;
+          location / {
+            try_files $uri $uri/ =404;
+          }
+        }
+    """
+
+    add_static_content_to_nginx(host, "index.html", static_content)
+    reconfigure_nginx2(host, config_file_content=config)
+
+    assert_http_response_contains(host, "http://localhost:80", static_content)
+
 
