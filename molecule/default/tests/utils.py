@@ -73,6 +73,9 @@ def reconfigure_nginx2(host, config_file_content):
 
     assert nginx.is_running
 
+def delete_files_under(host, folder):
+    assert host.run("rm -rf {}".format(folder)).succeeded
+
 
 def http_response(host, url):
     return host.run("curl {}".format(url)).stdout
@@ -80,3 +83,6 @@ def http_response(host, url):
 
 def assert_http_response_contains(host, url, partial_content):
     assert partial_content in http_response(host, url)
+
+def assert_http_not_found(host, url):
+    assert "404 Not Foun" in http_response(host, url)
