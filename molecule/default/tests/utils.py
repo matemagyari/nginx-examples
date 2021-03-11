@@ -22,13 +22,23 @@ def read_nginx_config_file(filename):
     read_file(path)
 
 
+def execute(host, cmd):
+    assert host.run(cmd).succeeded
+
+
 def copy_content_to_file(host, content, remote_path):
+    folder_path = os.path.split(remote_path)[0]
+
+    if folder_path:
+        # ensure the folders are created
+        assert host.run("mkdir -p {}".format(folder_path)).succeeded
+
     # delete content of file if exists or create a new empty one
     assert host.run("echo '' > {}".format(remote_path)).succeeded
 
     for line in content.splitlines():
         cmd = "echo '{}' >> {}".format(line, remote_path)
-        assert host.run(cmd).succeeded
+        execute(host, cmd)
 
 
 def copy_file_to_host(host, local_path, remote_path):
@@ -37,6 +47,7 @@ def copy_file_to_host(host, local_path, remote_path):
 
 def add_static_content_to_nginx(host, file_name, content=None):
     remote_file_path = "/var/www/{}/{}".format(domain, file_name)
+
     if content is None:
         copy_file_to_host(host=host,
                           local_path="{}/static_content/{}".format(current_dir(), file_name),
@@ -56,8 +67,7 @@ def reconfigure_nginx2(host, config_file_content):
     nginx = host.service("nginx")
     assert nginx.is_enabled
 
-    cmd = host.run("nginx -s reload")
-    assert cmd.succeeded
+    execute(host, cmd="nginx -s reload")
 
     print("NGINX reloaded")
 
