@@ -10,8 +10,8 @@ provisioner:
   name: ansible
 scenario:
   ephemeral_directory: /tmp/molecule/curl/.molecule
-  test_sequence:
-    - verify
+#  test_sequence:
+#    - verify
 verifier:
   name: testinfra
   options:

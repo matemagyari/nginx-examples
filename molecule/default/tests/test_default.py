@@ -8,21 +8,6 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
     os.environ['MOLECULE_INVENTORY_FILE']).get_hosts('all')
 
 
-def test_static_page(host):
-    add_static_content_to_nginx(host, "index.html")
-    reconfigure_nginx(host, config_file="simple_static_content.conf")
-
-    assert_http_response_contains(host, "http://localhost:80", 'Index page')
-
-
-def test_static_page_2(host):
-    content = "<html>Hey</html>"
-    copy_content_to_file(host, content, "/var/www/default-domain/index.html")
-    reconfigure_nginx(host, config_file="simple_static_content.conf")
-
-    assert_http_response_contains(host, "http://localhost:80", content)
-
-
 def test_simple_proxy(host):
     config = """
         server {
@@ -34,27 +19,6 @@ def test_simple_proxy(host):
     reconfigure_nginx2(host, config_file_content=config)
 
     assert_http_response_contains(host, "http://localhost:80", 'NodeJs Hello')
-
-
-def test_simple_proxy2(host):
-    static_content = "<html>Hey2</html>"
-
-    config = """
-        server {
-          listen 80;
-          listen [::]:80;
-          server_name default-domain;
-          root /var/www/default-domain;
-          location / {
-            try_files $uri $uri/ =404;
-          }
-        }
-    """
-
-    copy_content_to_file(host, static_content, "/var/www/default-domain/index.html")
-    reconfigure_nginx2(host, config_file_content=config)
-
-    assert_http_response_contains(host, "http://localhost:80", static_content)
 
 
 def test_static_content_multiple_locations(host):
