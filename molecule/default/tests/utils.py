@@ -3,13 +3,10 @@ import os
 
 # todo read from from Ansible
 domain = "default-domain"
-
+nginx_config_path = "/etc/nginx/sites-enabled/{}".format(domain)
 
 def current_dir():
     return os.path.dirname(os.path.realpath(__file__))
-
-
-nginx_config_path = "/etc/nginx/sites-enabled/{}".format(domain)
 
 
 def read_file(file_path):
@@ -68,6 +65,7 @@ def reconfigure_nginx(host, config_file_content):
 
     assert nginx.is_running
 
+
 def delete_files_under(host, folder):
     assert host.run("rm -rf {}".format(folder)).succeeded
 
@@ -79,5 +77,6 @@ def http_response(host, url):
 def assert_http_response_contains(host, url, partial_content):
     assert partial_content in http_response(host, url)
 
+
 def assert_http_not_found(host, url):
-    assert "404 Not Foun" in http_response(host, url)
+    assert "404 Not Found" in http_response(host, url)
