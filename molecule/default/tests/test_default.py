@@ -110,6 +110,26 @@ def test_regex_locations(host):
     assert_http_response_contains(host, "http://localhost:80/some.mp4", some_mp4)
 
 
+def test_default_dirs_to_index:
+    delete_files_under(host, "/var/www/default-domain")
+
+    config = """
+        server {
+          root /var/www/default-domain;
+          
+          # If a request ends with a slash, NGINX treats it as a request 
+          # for a directory and tries to find an index file in the directory
+          location /persons/ {
+          }
+        }
+    """
+
+    index_content = "<html>index</html>"
+    copy_content_to_file(host, index_content, "/var/www/default-domain/persons/index.html")
+    reconfigure_nginx2(host, config_file_content=config)
+    assert_http_response_contains(host, "http://localhost:80/persons2", index_content)
+
+
 def test_multiple_locations(host):
     delete_files_under(host, "/var/www/default-domain")
 
