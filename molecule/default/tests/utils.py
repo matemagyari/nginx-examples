@@ -56,12 +56,7 @@ def add_static_content_to_nginx(host, file_name, content=None):
         copy_content_to_file(host, content, remote_file_path)
 
 
-def reconfigure_nginx(host, config_file):
-    local_path = "{}/nginx_configs/{}".format(current_dir(), config_file)
-    reconfigure_nginx2(host, config_file_content=read_file(local_path))
-
-
-def reconfigure_nginx2(host, config_file_content):
+def reconfigure_nginx(host, config_file_content):
     copy_content_to_file(host, config_file_content, nginx_config_path)
 
     nginx = host.service("nginx")

@@ -16,7 +16,7 @@ def test_simple_proxy(host):
             }
         }
     """
-    reconfigure_nginx2(host, config_file_content=config)
+    reconfigure_nginx(host, config_file_content=config)
 
     assert_http_response_contains(host, "http://localhost:80", 'NodeJs Hello')
 
@@ -33,7 +33,7 @@ def test_try_files_404(host):
         }
     """
 
-    reconfigure_nginx2(host, config_file_content=config)
+    reconfigure_nginx(host, config_file_content=config)
 
     assert_http_not_found(host, "http://localhost:80/jack.html")
 
@@ -53,7 +53,7 @@ def test_try_files_with_default(host):
     index_content = "<html>Index</html>"
     copy_content_to_file(host, index_content, "/var/www/default-domain/default/index.html")
 
-    reconfigure_nginx2(host, config_file_content=config)
+    reconfigure_nginx(host, config_file_content=config)
 
     assert_http_response_contains(host, "http://localhost:80/nonexisting.html", index_content)
 
@@ -73,7 +73,7 @@ def test_change_listener_port(host):
     joe_content = "<html>Joe</html>"
     copy_content_to_file(host, joe_content, "/var/www/default-domain/joe.html")
 
-    reconfigure_nginx2(host, config_file_content=config)
+    reconfigure_nginx(host, config_file_content=config)
 
     assert_http_response_contains(host, "http://localhost:8085/joe.html", joe_content)
 
@@ -103,14 +103,14 @@ def test_regex_locations(host):
     copy_content_to_file(host, some_mp3, "/var/www/default-domain/music/some.mp3")
     copy_content_to_file(host, some_mp4, "/var/www/default-domain/music/some.mp4")
 
-    reconfigure_nginx2(host, config_file_content=config)
+    reconfigure_nginx(host, config_file_content=config)
 
     assert_http_response_contains(host, "http://localhost:80/index.html", index_content)
     assert_http_response_contains(host, "http://localhost:80/some.mp3", some_mp3)
     assert_http_response_contains(host, "http://localhost:80/some.mp4", some_mp4)
 
 
-def test_default_dirs_to_index:
+def test_default_dirs_to_index(host):
     delete_files_under(host, "/var/www/default-domain")
 
     config = """
@@ -126,8 +126,9 @@ def test_default_dirs_to_index:
 
     index_content = "<html>index</html>"
     copy_content_to_file(host, index_content, "/var/www/default-domain/persons/index.html")
-    reconfigure_nginx2(host, config_file_content=config)
-    assert_http_response_contains(host, "http://localhost:80/persons2", index_content)
+    reconfigure_nginx(host, config_file_content=config)
+    assert_http_response_contains(host, "http://localhost:80/persons/", index_content)
+    assert_http_response_contains(host, "http://localhost:80/persons", "301 Moved Permanently")
 
 
 def test_multiple_locations(host):
@@ -159,7 +160,7 @@ def test_multiple_locations(host):
     copy_content_to_file(host, jack_content, "/var/www/default-domain/jack/jack.html")
     copy_content_to_file(host, jane_content, "/var/www/default-domain/jane_home/htmls/jane/jane.html")
 
-    reconfigure_nginx2(host, config_file_content=config)
+    reconfigure_nginx(host, config_file_content=config)
 
     assert_http_response_contains(host, "http://localhost:80/joe.html", joe_content)
     assert_http_response_contains(host, "http://localhost:80/jack/jack.html", jack_content)
