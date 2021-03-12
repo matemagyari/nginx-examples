@@ -58,6 +58,24 @@ def test_try_files_with_default(host):
     assert_http_response_contains(host, "http://localhost:80/nonexisting.html", index_content)
 
 
+def test_try_files_with_trailing_slash(host):
+    delete_files_under(host, "/var/www/default-domain")
+
+    config = """
+        server {
+          root /var/www/default-domain;
+          location / {
+            try_files $uri $uri/;
+          }
+        }
+    """
+
+    index_content = "<html>index</html>"
+    copy_content_to_file(host, index_content, "/var/www/default-domain/persons/index.html")
+    reconfigure_nginx(host, config_file_content=config)
+    assert_http_response_contains(host, "http://localhost:80/persons", index_content)
+
+
 def test_change_listener_port(host):
     delete_files_under(host, "/var/www/default-domain")
 
