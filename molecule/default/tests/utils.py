@@ -20,7 +20,8 @@ def read_nginx_config_file(filename):
 
 
 def execute(host, cmd):
-    assert host.run(cmd).succeeded
+    result = host.run(cmd)
+    assert result.succeeded, f"Failed with {result}"
 
 
 def copy_content_to_file(host, content, remote_path):
@@ -28,10 +29,10 @@ def copy_content_to_file(host, content, remote_path):
 
     if folder_path:
         # ensure the folders are created
-        assert host.run("mkdir -p {}".format(folder_path)).succeeded
+        execute(host, "mkdir -p {}".format(folder_path))
 
     # delete content of file if exists or create a new empty one
-    assert host.run("echo '' > {}".format(remote_path)).succeeded
+    execute(host, "echo '' > {}".format(remote_path))
 
     for line in content.splitlines():
         cmd = "echo '{}' >> {}".format(line, remote_path)
@@ -67,7 +68,7 @@ def reconfigure_nginx(host, config_file_content):
 
 
 def delete_files_under(host, folder):
-    assert host.run("rm -rf {}".format(folder)).succeeded
+    execute(host, "rm -rf {}".format(folder))
 
 
 def http_response(host, url):
