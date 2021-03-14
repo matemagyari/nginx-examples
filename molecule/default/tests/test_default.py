@@ -20,7 +20,8 @@ def test_simple_proxy(host):
 
     assert_http_response_contains(host, "http://localhost:80", 'NodeJs Hello')
 
-@pytest.mark.skip(reason="No idea")
+
+@pytest.mark.skip(reason="not do return")
 def test_simple_proxy_with_regex(host):
     clean_up_and_reconfigure_nginx(host, config="""
         server {
@@ -28,7 +29,7 @@ def test_simple_proxy_with_regex(host):
             location / {
             }
             location ~ /person/(.*) {
-                return http://localhost/$1;
+                return http://localhost/jack/;
             }
         }
     """)
@@ -47,7 +48,7 @@ def test_try_files_delegate_to_named_location(host):
                 # last option can be a named location
                 try_files $uri $uri/index.html @mongrel;
             }
-            
+
             location @mongrel {
                 proxy_pass http://localhost:3000;
             }
@@ -216,7 +217,7 @@ def test_multiple_locations(host):
     assert_http_response_contains(host, "http://localhost:80/jane/jane.html", jane_content)
 
 
-def test_reject_empty_server_name(host):
+def test_return_reject_empty_server_name(host):
     clean_up_and_reconfigure_nginx(host, config="""
         server {
             listen      80;
@@ -226,6 +227,21 @@ def test_reject_empty_server_name(host):
     """)
 
     assert_http_response_contains(host, "http://localhost:80/anything", "400 Bad Request")
+
+
+def test_return_example(host):
+    clean_up_and_reconfigure_nginx(host, config="""
+        server {
+            root /var/www/default-domain;
+            location / {
+            }
+            location ~ /bad/(.*) {
+                return 401 "Access denied because token is expired or invalid";
+            }
+        }
+    """)
+
+    assert_http_response_contains(host, "http://localhost/bad/whatever", "Access denied because token is expired or invalid")
 
 
 def test_choose_virtual_server_by_host(host):
