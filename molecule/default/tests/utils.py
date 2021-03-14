@@ -1,5 +1,9 @@
 # Utility functions for tests
 import os
+import testinfra.utils.ansible_runner
+
+testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
+    os.environ['MOLECULE_INVENTORY_FILE']).get_hosts('all')
 
 # todo read from from Ansible
 domain = "default-domain"
@@ -80,8 +84,9 @@ def http_response(host, url):
 
 
 def assert_http_response_contains(host, url, partial_content):
-    assert partial_content in http_response(host, url)
+    response = http_response(host, url)
+    assert partial_content in response, f"[{response}] does not contain [{partial_content}]"
 
 
 def assert_http_not_found(host, url):
-    assert "404 Not Found" in http_response(host, url)
+    assert_http_response_contains(host, url, "404 Not Found")

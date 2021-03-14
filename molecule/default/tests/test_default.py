@@ -1,10 +1,12 @@
-import testinfra.utils.ansible_runner
 import pytest
 
 from utils import *
 
-testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
-    os.environ['MOLECULE_INVENTORY_FILE']).get_hosts('all')
+# todo list
+# named location
+# rewrite
+# regex in location name
+#
 
 
 def test_simple_proxy(host):
@@ -17,6 +19,43 @@ def test_simple_proxy(host):
     """)
 
     assert_http_response_contains(host, "http://localhost:80", 'NodeJs Hello')
+
+@pytest.mark.skip(reason="No idea")
+def test_simple_proxy_with_regex(host):
+    clean_up_and_reconfigure_nginx(host, config="""
+        server {
+            root /var/www/default-domain;
+            location / {
+            }
+            location ~ /person/(.*) {
+                return http://localhost/$1;
+            }
+        }
+    """)
+
+    jack_html = "<html>joe</html>"
+    copy_content_to_file(host, jack_html, "/var/www/default-domain/jack/index.html")
+    assert_http_response_contains(host, "http://localhost/jack/index.html", jack_html)
+    assert_http_response_contains(host, "http://localhost/person/jack/index.html", jack_html)
+
+
+def test_try_files_delegate_to_named_location(host):
+    clean_up_and_reconfigure_nginx(host, config="""
+        server {
+            root /var/www/default-domain;
+            location / {
+                # last option can be a named location
+                try_files $uri $uri/index.html @mongrel;
+            }
+            
+            location @mongrel {
+                proxy_pass http://localhost:3000;
+            }
+        }
+    """)
+
+    assert_http_response_contains(host, "http://localhost/noneexisting.html", 'NodeJs Hello')
+
 
 
 def test_try_files_404(host):
@@ -107,7 +146,6 @@ def test_regex_locations(host):
           location / {
           }
 
-          # /jack maps to /var/www/default-domain/jack
           location ~ \.(mp3|mp4) {
             root /var/www/default-domain/music;
           }
@@ -199,7 +237,7 @@ def test_choose_virtual_server_by_host(host):
               root /var/www/default-domain/server1;
             }
         }
-        
+
         server {
             listen 80;
             server_name example2.org www.example2.org;
@@ -207,8 +245,8 @@ def test_choose_virtual_server_by_host(host):
               root /var/www/default-domain/server2;
             }
         }
-        
-       # default server to catch the rest 
+
+       # default server to catch the rest
         server {
             listen 80 default_server;
             location / {
@@ -258,3 +296,14 @@ def test_choose_virtual_server_by_port(host):
 
     assert_http_response_contains(host, "http://localhost:8081", server1_index)
     assert_http_response_contains(host, "http://localhost:8082", server2_index)
+
+
+def test_return(host):
+    clean_up_and_reconfigure_nginx(host, config="""
+        server {
+            root /var/www/default-domain/server1;
+            location /persons/ {
+                return 301;
+            }
+        }
+    """)
