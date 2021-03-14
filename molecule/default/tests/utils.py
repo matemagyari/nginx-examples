@@ -67,6 +67,10 @@ def reconfigure_nginx(host, config_file_content):
     assert nginx.is_running
 
 
+def clean_up_and_reconfigure_nginx(host, config):
+    delete_files_under(host, "/var/www/default-domain")
+    reconfigure_nginx(host, config)
+
 def delete_files_under(host, folder):
     execute(host, "rm -rf {}".format(folder))
 
