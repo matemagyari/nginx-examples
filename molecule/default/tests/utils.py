@@ -1,5 +1,6 @@
 # Utility functions for tests
 import os
+import time
 import testinfra.utils.ansible_runner
 
 testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
@@ -90,3 +91,7 @@ def assert_http_response_contains(host, url, partial_content):
 
 def assert_http_not_found(host, url):
     assert_http_response_contains(host, url, "404 Not Found")
+
+
+def current_milli_time():
+    return round(time.time() * 1000)
